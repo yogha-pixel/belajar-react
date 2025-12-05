@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import { createContext, useContext, useEffect, useState } from 'react';
 
 const AuthContext = createContext(null);
@@ -7,6 +6,7 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const [user, setUser]   = useState(null);
 
+  // load dari localStorage saat pertama kali
   useEffect(() => {
     const savedToken = localStorage.getItem('auth_token');
     const savedUser  = localStorage.getItem('auth_user');
