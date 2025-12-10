@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginApi } from '../api/auth';
 import { useAuth } from '../context/AuthContext';
@@ -12,10 +12,8 @@ function LoginPage() {
   const { login, isAuthenticated } = useAuth();
 
   const handleChange = (e) => {
-    setForm(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -25,7 +23,7 @@ function LoginPage() {
 
     try {
       const data = await loginApi(form);
-      login(data.token, data.user);   // simpan token + user
+      login(data.token, data.user);
       navigate('/todos');
     } catch (err) {
       setError(err.message);
@@ -34,50 +32,65 @@ function LoginPage() {
     }
   };
 
-  // kalau sudah login, redirect ke /todos
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/todos');
-    }
-  }, [isAuthenticated, navigate]);
+  if (isAuthenticated) {
+    navigate('/todos');
+  }
 
   return (
-    <main style={{ padding: '2rem' }}>
-      <h1>Login</h1>
+    <section className="card">
+      <header className="card-header">
+        <h1 className="card-title">Login</h1>
+        <p className="card-subtitle">
+          Masuk untuk mengakses Todo API yang sudah dibuat di Laravel.
+        </p>
+      </header>
 
-      <form
-        onSubmit={handleSubmit}
-        style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: 400 }}
-      >
-        <label>
-          Email
-          <input
-            name="email"
-            type="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
-        </label>
+      <div className="card-body">
+        <form className="form-vertical" onSubmit={handleSubmit}>
+          <div className="form-field">
+            <label className="form-label" htmlFor="email">
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              className="input"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <label>
-          Password
-          <input
-            name="password"
-            type="password"
-            value={form.password}
-            onChange={handleChange}
-            required
-          />
-        </label>
+          <div className="form-field">
+            <label className="form-label" htmlFor="password">
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              className="input"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? 'Login...' : 'Login'}
-        </button>
+          {error && (
+            <div className="alert alert-error">
+              {error}
+            </div>
+          )}
 
-        {error && <p style={{ color: 'crimson' }}>{error}</p>}
-      </form>
-    </main>
+          <div className="btn-row">
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? 'Login...' : 'Login'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
   );
 }
 
